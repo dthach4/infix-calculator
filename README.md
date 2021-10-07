@@ -44,6 +44,6 @@ now, just enjoy this very basic expression solver!
 
 Dany Thach - <d.thach4@gmail.com>
 
-##License
+## License
 
 InfixCalculator is licensed under the [MIT License](LICENSE).
