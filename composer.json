@@ -1,5 +1,6 @@
 {
   "name": "omnicron/infix-calculator",
+  "type": "library",
   "description": "Basic infix expression solver",
   "keywords": [
     "calculator",
@@ -13,7 +14,7 @@
       "email": "d.thach4@gmail.com"
     }
   ],
-  "type": "library",
+  "minimum-stability": "stable",
   "require": {
     "php": ">=7.4"
   },
