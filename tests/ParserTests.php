@@ -34,6 +34,13 @@ class ParserTests extends TestCase
     $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
     $this->assertEquals(3, $parsingTree->evaluate());
   }
+  public function testParserBasicPower() {
+    $lexer = new Lexer;
+    $parser = new Parser;
+    $tokenizedExpression = $lexer->tokenizeExpression('2 ^ 5');
+    $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
+    $this->assertEquals(32, $parsingTree->evaluate());
+  }
   public function testParserNegationOne() {
     $lexer = new Lexer;
     $parser = new Parser;
@@ -47,6 +54,27 @@ class ParserTests extends TestCase
     $tokenizedExpression = $lexer->tokenizeExpression('-(-3 * (1 + 2))');
     $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
     $this->assertEquals(9, $parsingTree->evaluate());
+  }
+  public function testParserNegationThree() {
+    $lexer = new Lexer;
+    $parser = new Parser;
+    $tokenizedExpression = $lexer->tokenizeExpression('-2^4');
+    $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
+    $this->assertEquals(-16, $parsingTree->evaluate());
+  }
+  public function testParserNegationFour() {
+    $lexer = new Lexer;
+    $parser = new Parser;
+    $tokenizedExpression = $lexer->tokenizeExpression('(2-3)^4');
+    $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
+    $this->assertEquals(1, $parsingTree->evaluate());
+  }
+  public function testParserNegationFive() {
+    $lexer = new Lexer;
+    $parser = new Parser;
+    $tokenizedExpression = $lexer->tokenizeExpression('(-2)^4');
+    $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
+    $this->assertEquals(16, $parsingTree->evaluate());
   }
   public function testParserBracketsOne() {
     $lexer = new Lexer;
@@ -68,6 +96,13 @@ class ParserTests extends TestCase
     $tokenizedExpression = $lexer->tokenizeExpression('1 + (3 * (5 - ((7 + 1) / 2)))');
     $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
     $this->assertEquals(4, $parsingTree->evaluate());
+  }
+  public function testParserBracketsFour() {
+    $lexer = new Lexer;
+    $parser = new Parser;
+    $tokenizedExpression = $lexer->tokenizeExpression('(3+2)^2');
+    $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
+    $this->assertEquals(25, $parsingTree->evaluate());
   }
   public function testParserPemdasOne() {
     $lexer = new Lexer;
@@ -103,5 +138,19 @@ class ParserTests extends TestCase
     $tokenizedExpression = $lexer->tokenizeExpression('30 + 4 * (2 - 5)');
     $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
     $this->assertEquals(18, $parsingTree->evaluate());
+  }
+  public function testParserPemdasSix() {
+    $lexer = new Lexer;
+    $parser = new Parser;
+    $tokenizedExpression = $lexer->tokenizeExpression('3 + 2^5 - 10');
+    $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
+    $this->assertEquals(25, $parsingTree->evaluate());
+  }
+  public function testParserPemdasSeven() {
+    $lexer = new Lexer;
+    $parser = new Parser;
+    $tokenizedExpression = $lexer->tokenizeExpression('2^3 / 2^2');
+    $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
+    $this->assertEquals(2, $parsingTree->evaluate());
   }
 }

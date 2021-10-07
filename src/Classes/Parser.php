@@ -10,6 +10,7 @@ use \Omnicron\InfixCalculator\Token\LiteralToken;
 use \Omnicron\InfixCalculator\Token\MultiplicationToken;
 use \Omnicron\InfixCalculator\Token\NegationToken;
 use \Omnicron\InfixCalculator\Token\OpenBracketToken;
+use \Omnicron\InfixCalculator\Token\PowerToken;
 use \Omnicron\InfixCalculator\Token\SubtractionToken;
 use \Omnicron\InfixCalculator\TreeNode\LiteralTreeNode;
 use \Omnicron\InfixCalculator\TreeNode\OperationTreeNode;
@@ -44,7 +45,22 @@ class Parser
         $buffer[] = $nextToken;
       }
     }
-    // processing unary operations
+    // processing power
+    for($j = 0; $j < count($buffer); ++$j) {
+      if(is_a($buffer[$j], PowerToken::class)) {
+        array_splice(
+          $buffer,
+          $j-1,
+          3,
+          [new OperationTreeNode(
+            $buffer[$j],
+            [$buffer[$j-1], $buffer[$j+1]]
+          )]
+        );
+        --$j;
+      }
+    }
+    // processing negation
     for($j = 0; $j < count($buffer); ++$j) {
       if(is_a($buffer[$j], NegationToken::class)) {
         array_splice(
@@ -95,6 +111,7 @@ class Parser
       }
     }
     if(count($buffer) !== 1) {
+      var_dump($buffer);
       throw new \Exception('Buffer size is '.count($buffer).' after reduction');
     }
     return $buffer[0];

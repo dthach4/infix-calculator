@@ -10,6 +10,7 @@ use \Omnicron\InfixCalculator\Token\LiteralToken;
 use \Omnicron\InfixCalculator\Token\MultiplicationToken;
 use \Omnicron\InfixCalculator\Token\NegationToken;
 use \Omnicron\InfixCalculator\Token\OpenBracketToken;
+use \Omnicron\InfixCalculator\Token\PowerToken;
 use \Omnicron\InfixCalculator\Token\SubtractionToken;
 
 class Lexer
@@ -21,7 +22,7 @@ class Lexer
     $expectOperator = false; // undignified fsa lmao
     while(strlen(trim($remainingExpression)) > 0) {
       if(false === $expectOperator) {
-        if(preg_match('/^\s*(-?[0-9]+(?:\.[0-9]*)?)(.*)$/', $remainingExpression, $regexMatches)) {
+        if(preg_match('/^\s*([0-9]+(?:\.[0-9]*)?)(.*)$/', $remainingExpression, $regexMatches)) {
           $tokens[] = new LiteralToken(floatval($regexMatches[1]));
           $remainingExpression = $regexMatches[2];
           $expectOperator = true;
@@ -51,6 +52,10 @@ class Lexer
           $expectOperator = false;
         } elseif(preg_match('/^\s*(\/)(.*)$/', $remainingExpression, $regexMatches)) {
           $tokens[] = new DivisionToken;
+          $remainingExpression = $regexMatches[2];
+          $expectOperator = false;
+        } elseif(preg_match('/^\s*(\^)(.*)$/', $remainingExpression, $regexMatches)) {
+          $tokens[] = new PowerToken;
           $remainingExpression = $regexMatches[2];
           $expectOperator = false;
         } elseif(preg_match('/^\s*(\))(.*)$/', $remainingExpression, $regexMatches)) {

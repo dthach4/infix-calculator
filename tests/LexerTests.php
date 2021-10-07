@@ -8,6 +8,7 @@ use \Omnicron\InfixCalculator\Token\MultiplicationToken;
 use \Omnicron\InfixCalculator\Token\OpenBracketToken;
 use \Omnicron\InfixCalculator\Token\SubtractionToken;
 use \Omnicron\InfixCalculator\Token\LiteralToken;
+use \Omnicron\InfixCalculator\Token\PowerToken;
 use \PHPUnit\Framework\TestCase;
 
 class LexerTests extends TestCase
@@ -38,6 +39,13 @@ class LexerTests extends TestCase
     $tokenizedExpression = $lexer->tokenizeExpression('6 / 2');
     $this->assertTrue(is_a($tokenizedExpression[0], LiteralToken::class));
     $this->assertTrue(is_a($tokenizedExpression[1], DivisionToken::class));
+    $this->assertTrue(is_a($tokenizedExpression[2], LiteralToken::class));
+  }
+  public function testLexerBasicPower() {
+    $lexer = new Lexer;
+    $tokenizedExpression = $lexer->tokenizeExpression('3 ^ 2');
+    $this->assertTrue(is_a($tokenizedExpression[0], LiteralToken::class));
+    $this->assertTrue(is_a($tokenizedExpression[1], PowerToken::class));
     $this->assertTrue(is_a($tokenizedExpression[2], LiteralToken::class));
   }
   public function testLexerBasicBrackets() {

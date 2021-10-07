@@ -6,7 +6,7 @@ infix notation.
 At the moment, it only supports:
 * Numbers (integers and decimals)
 * Brackets
-* Arithmetic operators: + - * /
+* Arithmetic operators: + - * / ^
 
 ## Install via Composer
 
@@ -27,7 +27,7 @@ use Omnicron\InfixCalculator\Calculator;
 $calculator = new Calculator;
 
 // calculate the result of an expression
-$result = $calculator->solve('3 + 5 * (2 + 1)');
+$result = $calculator->solve('3 + 5 * (2^2 + 1)');
 
 // write the result
 echo $result;
