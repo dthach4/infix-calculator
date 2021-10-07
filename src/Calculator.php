@@ -3,6 +3,7 @@
 namespace Omnicron\InfixCalculator;
 
 use Omnicron\InfixCalculator\Classes\Lexer;
+use Omnicron\InfixCalculator\Classes\Parser;
 
 class Calculator
 {
