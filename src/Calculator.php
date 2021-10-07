@@ -2,7 +2,7 @@
 
 namespace Omnicron\InfixCalculator;
 
-use Onmicron\InfixCalculator\Classes\Lexer;
+use Omnicron\InfixCalculator\Classes\Lexer;
 
 class Calculator
 {
