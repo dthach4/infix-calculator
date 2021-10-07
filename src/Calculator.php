@@ -12,7 +12,7 @@ class Calculator
     $lexer = new Lexer;
     $expressionTokens = $lexer->tokenizeExpression($expression);
     $parser = new Parser;
-    $expressionTree = $lexer->parseTokenizedExpression($expressionTokens);
+    $expressionTree = $parser->parseTokenizedExpression($expressionTokens);
     return $expressionTree->evaluate();
   }
 
