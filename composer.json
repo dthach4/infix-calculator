@@ -1,0 +1,28 @@
+{
+  "name": "omnicron/infix-calculator",
+  "description": "Basic infix expression solver",
+  "keywords": [
+    "calculator",
+    "math",
+    "expression",
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Dany Thach",
+      "email": "d.thach4@gmail.com"
+    }
+  ],
+  "type": "library",
+  "require": {
+    "php": ">=7.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9"
+  },
+  "autoload": {
+    "psr-4": {
+      "Omnicron\\InfixCalculator\\": "src/"
+    }
+  }
+}
