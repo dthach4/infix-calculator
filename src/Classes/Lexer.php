@@ -35,7 +35,8 @@ class Lexer
           $remainingExpression = $regexMatches[2];
           $expectOperator = false;
         } else {
-          throw new InvalidExpressionException;
+          preg_match('/^\s*(.*)$/', $remainingExpression, $regexMatches);
+          throw new InvalidExpressionException('Unexpected character "'.$regexMatches[1][0].'" at index '.strlen($expression)-strlen($regexMatches[1]));
         }
       } else {
         if(preg_match('/^\s*(\+)(.*)$/', $remainingExpression, $regexMatches)) {
@@ -63,7 +64,8 @@ class Lexer
           $remainingExpression = $regexMatches[2];
           $expectOperator = true;
         } else {
-          throw new InvalidExpressionException;
+          preg_match('/^\s*(.*)$/', $remainingExpression, $regexMatches);
+          throw new InvalidExpressionException('Unexpected character "'.$regexMatches[1][0].'" at index '.strlen($expression)-strlen($regexMatches[1]));
         }
       }
     }
