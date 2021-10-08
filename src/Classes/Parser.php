@@ -10,6 +10,7 @@ use \Omnicron\InfixCalculator\Token\OperationToken;
 use \Omnicron\InfixCalculator\Token\UnaryOperationToken;
 use \Omnicron\InfixCalculator\TreeNode\LiteralTreeNode;
 use \Omnicron\InfixCalculator\TreeNode\OperationTreeNode;
+use \Omnicron\InfixCalculator\TreeNode\TreeNode;
 
 class Parser
 {
@@ -54,15 +55,22 @@ class Parser
       for($j = 0; $j < count($buffer); ++$j) {
         if(is_a($buffer[$j], OperationToken::class) && $buffer[$j]->getPriority() === $priority) {
           if(is_a($buffer[$j], UnaryOperationToken::class)) {
-            array_splice(
-              $buffer,
-              $j,
-              2,
-              [new OperationTreeNode(
-                $buffer[$j],
-                [$buffer[$j+1]]
-              )]
-            );
+            $k = $j;
+            while(is_a($buffer[$k+1], UnaryOperationToken::class)) {
+              ++$k;
+            }
+            while($k >= $j) {
+              array_splice(
+                $buffer,
+                $k,
+                2,
+                [new OperationTreeNode(
+                  $buffer[$k],
+                  [$buffer[$k+1]]
+                )]
+              );
+              --$k;
+            }
           } elseif(is_a($buffer[$j], BinaryOperationToken::class)) {
             array_splice(
               $buffer,
