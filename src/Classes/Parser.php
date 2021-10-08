@@ -2,16 +2,12 @@
 
 namespace Omnicron\InfixCalculator\Classes;
 
-use \Omnicron\InfixCalculator\Exceptions\InvalidExpressionException;
-use \Omnicron\InfixCalculator\Token\AdditionToken;
+use \Omnicron\InfixCalculator\Token\BinaryOperationToken;
 use \Omnicron\InfixCalculator\Token\ClosedBracketToken;
-use \Omnicron\InfixCalculator\Token\DivisionToken;
 use \Omnicron\InfixCalculator\Token\LiteralToken;
-use \Omnicron\InfixCalculator\Token\MultiplicationToken;
-use \Omnicron\InfixCalculator\Token\NegationToken;
 use \Omnicron\InfixCalculator\Token\OpenBracketToken;
-use \Omnicron\InfixCalculator\Token\PowerToken;
-use \Omnicron\InfixCalculator\Token\SubtractionToken;
+use \Omnicron\InfixCalculator\Token\OperationToken;
+use \Omnicron\InfixCalculator\Token\UnaryOperationToken;
 use \Omnicron\InfixCalculator\TreeNode\LiteralTreeNode;
 use \Omnicron\InfixCalculator\TreeNode\OperationTreeNode;
 
@@ -45,69 +41,43 @@ class Parser
         $buffer[] = $nextToken;
       }
     }
-    // processing power
+    // getting all priorities
+    $priorities = [];
     for($j = 0; $j < count($buffer); ++$j) {
-      if(is_a($buffer[$j], PowerToken::class)) {
-        array_splice(
-          $buffer,
-          $j-1,
-          3,
-          [new OperationTreeNode(
-            $buffer[$j],
-            [$buffer[$j-1], $buffer[$j+1]]
-          )]
-        );
-        --$j;
+      if(is_a($buffer[$j], OperationToken::class) && !in_array($buffer[$j]->getPriority(), $priorities)) {
+        array_push($priorities, $buffer[$j]->getPriority());
       }
     }
-    // processing negation
-    for($j = 0; $j < count($buffer); ++$j) {
-      if(is_a($buffer[$j], NegationToken::class)) {
-        array_splice(
-          $buffer,
-          $j,
-          2,
-          [new OperationTreeNode(
-            $buffer[$j],
-            [$buffer[$j+1]]
-          )]
-        );
-      }
-    }
-    // processing multiplications and divisions
-    for($j = 0; $j < count($buffer); ++$j) {
-      if(
-        is_a($buffer[$j], MultiplicationToken::class) ||
-        is_a($buffer[$j], DivisionToken::class)
-      ) {
-        array_splice(
-          $buffer,
-          $j-1,
-          3,
-          [new OperationTreeNode(
-            $buffer[$j],
-            [$buffer[$j-1], $buffer[$j+1]]
-          )]
-        );
-        --$j;
-      }
-    }
-    // processing additions and subtractions
-    for($j = 0; $j < count($buffer); ++$j) {
-      if(
-        is_a($buffer[$j], AdditionToken::class) ||
-        is_a($buffer[$j], SubtractionToken::class)
-      ) {
-        array_splice(
-          $buffer,
-          $j-1,
-          3,
-          [new OperationTreeNode(
-            $buffer[$j],
-            [$buffer[$j-1], $buffer[$j+1]]
-          )]
-        );
-        --$j;
+    usort($priorities, function ($a, $b) { return $b <=> $a; });
+    // processing tokens by priority
+    foreach($priorities as $priority) {
+      for($j = 0; $j < count($buffer); ++$j) {
+        if(is_a($buffer[$j], OperationToken::class) && $buffer[$j]->getPriority() === $priority) {
+          if(is_a($buffer[$j], UnaryOperationToken::class)) {
+            array_splice(
+              $buffer,
+              $j,
+              2,
+              [new OperationTreeNode(
+                $buffer[$j],
+                [$buffer[$j+1]]
+              )]
+            );
+          } elseif(is_a($buffer[$j], BinaryOperationToken::class)) {
+            array_splice(
+              $buffer,
+              $j-1,
+              3,
+              [new OperationTreeNode(
+                $buffer[$j],
+                [$buffer[$j-1], $buffer[$j+1]]
+              )]
+            );
+            --$j;
+          } else {
+            throw new \Exception('Unable to handle an OperationToken which isn\'t either a UnaryOperationToken or a BinaryOperationToken');
+          }
+        }
       }
     }
     if(count($buffer) !== 1) {

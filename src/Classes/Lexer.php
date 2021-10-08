@@ -4,6 +4,7 @@ namespace Omnicron\InfixCalculator\Classes;
 
 use \Omnicron\InfixCalculator\Exceptions\InvalidExpressionException;
 use \Omnicron\InfixCalculator\Token\AdditionToken;
+use \Omnicron\InfixCalculator\Token\BinaryOperationToken;
 use \Omnicron\InfixCalculator\Token\ClosedBracketToken;
 use \Omnicron\InfixCalculator\Token\DivisionToken;
 use \Omnicron\InfixCalculator\Token\LiteralToken;
@@ -12,62 +13,99 @@ use \Omnicron\InfixCalculator\Token\NegationToken;
 use \Omnicron\InfixCalculator\Token\OpenBracketToken;
 use \Omnicron\InfixCalculator\Token\PowerToken;
 use \Omnicron\InfixCalculator\Token\SubtractionToken;
+use \Omnicron\InfixCalculator\Token\UnaryOperationToken;
 
 class Lexer
 {
 
+  public array $operationTokens = [];
+
+  public function __construct() {
+    $this->operationTokens = [
+      new AdditionToken,
+      new DivisionToken,
+      new MultiplicationToken,
+      new NegationToken,
+      new PowerToken,
+      new SubtractionToken,
+    ];
+  }
+
   public function tokenizeExpression($expression) {
+    $unaryOperationTokens = [];
+    $binaryOperationTokens = [];
+    foreach($this->operationTokens as $operationToken) {
+      if(is_a($operationToken, UnaryOperationToken::class)) {
+        $unaryOperationTokens[] = $operationToken;
+      }
+      if(is_a($operationToken, BinaryOperationToken::class)) {
+        $binaryOperationTokens[] = $operationToken;
+      }
+    }
+    usort(
+      $unaryOperationTokens,
+      function ($a, $b) {
+        return strlen($b->getOperator()) <=> strlen($a->getOperator());
+      }
+    );
+    usort(
+      $binaryOperationTokens,
+      function ($a, $b) {
+        return strlen($b->getOperator()) <=> strlen($a->getOperator());
+      }
+    );
     $tokens = [];
-    $remainingExpression = $expression;
+    $remainingExpression = trim($expression);
     $expectOperator = false; // undignified fsa lmao
     while(strlen(trim($remainingExpression)) > 0) {
       if(false === $expectOperator) {
-        if(preg_match('/^\s*([0-9]+(?:\.[0-9]*)?)(.*)$/', $remainingExpression, $regexMatches)) {
+        if(preg_match('/^([0-9]+(?:\.[0-9]*)?)(.*)$/', $remainingExpression, $regexMatches)) {
           $tokens[] = new LiteralToken(floatval($regexMatches[1]));
           $remainingExpression = $regexMatches[2];
           $expectOperator = true;
-        } elseif(preg_match('/^\s*(-)(.*)$/', $remainingExpression, $regexMatches)) {
-          $tokens[] = new NegationToken;
-          $remainingExpression = $regexMatches[2];
-          $expectOperator = false;
-        } elseif(preg_match('/^\s*(\()(.*)$/', $remainingExpression, $regexMatches)) {
+        } elseif(preg_match('/^(\()(.*)$/', $remainingExpression, $regexMatches)) {
           $tokens[] = new OpenBracketToken;
           $remainingExpression = $regexMatches[2];
           $expectOperator = false;
         } else {
-          preg_match('/^\s*(.*)$/', $remainingExpression, $regexMatches);
-          throw new InvalidExpressionException('Unexpected character "'.$regexMatches[1][0].'" at index '.strlen($expression)-strlen($regexMatches[1]));
+          $operationToken = null;
+          $i = 0;
+          while($i < count($unaryOperationTokens) && is_null($operationToken)) {
+            if($unaryOperationTokens[$i]->getOperator() === substr($remainingExpression, 0, strlen($unaryOperationTokens[$i]->getOperator()))) {
+              $operationToken = $unaryOperationTokens[$i];
+            }
+            ++$i;
+          }
+          if(is_null($operationToken)) {
+            throw new InvalidExpressionException('Unexpected character "'.$remainingExpression[0].'" at index '.strlen($expression)-strlen($remainingExpression));
+          }
+          $tokens[] = $operationToken;
+          $remainingExpression = substr($remainingExpression, strlen($operationToken->getOperator()));
+          $expectOperator = false;
         }
       } else {
-        if(preg_match('/^\s*(\+)(.*)$/', $remainingExpression, $regexMatches)) {
-          $tokens[] = new AdditionToken;
-          $remainingExpression = $regexMatches[2];
-          $expectOperator = false;
-        } elseif(preg_match('/^\s*(-)(.*)$/', $remainingExpression, $regexMatches)) {
-          $tokens[] = new SubtractionToken;
-          $remainingExpression = $regexMatches[2];
-          $expectOperator = false;
-        } elseif(preg_match('/^\s*(\*)(.*)$/', $remainingExpression, $regexMatches)) {
-          $tokens[] = new MultiplicationToken;
-          $remainingExpression = $regexMatches[2];
-          $expectOperator = false;
-        } elseif(preg_match('/^\s*(\/)(.*)$/', $remainingExpression, $regexMatches)) {
-          $tokens[] = new DivisionToken;
-          $remainingExpression = $regexMatches[2];
-          $expectOperator = false;
-        } elseif(preg_match('/^\s*(\^)(.*)$/', $remainingExpression, $regexMatches)) {
-          $tokens[] = new PowerToken;
-          $remainingExpression = $regexMatches[2];
-          $expectOperator = false;
-        } elseif(preg_match('/^\s*(\))(.*)$/', $remainingExpression, $regexMatches)) {
+        if(preg_match('/^(\))(.*)$/', $remainingExpression, $regexMatches)) {
           $tokens[] = new ClosedBracketToken;
           $remainingExpression = $regexMatches[2];
           $expectOperator = true;
         } else {
-          preg_match('/^\s*(.*)$/', $remainingExpression, $regexMatches);
-          throw new InvalidExpressionException('Unexpected character "'.$regexMatches[1][0].'" at index '.strlen($expression)-strlen($regexMatches[1]));
+          $operationToken = null;
+          $i = 0;
+          while($i < count($binaryOperationTokens) && is_null($operationToken)) {
+            if($binaryOperationTokens[$i]->getOperator() === substr($remainingExpression, 0, strlen($binaryOperationTokens[$i]->getOperator()))) {
+              $operationToken = $binaryOperationTokens[$i];
+            }
+            ++$i;
+          }
+          if(is_null($operationToken)) {
+            throw new InvalidExpressionException('Unexpected character "'.$remainingExpression[0].'" at index '.strlen($expression)-strlen($remainingExpression));
+          }
+          $tokens[] = $operationToken;
+          $expectOperator = false;
+          $remainingExpression = substr($remainingExpression, strlen($operationToken->getOperator()));
         }
       }
+      $remainingExpression = trim($remainingExpression);
     }
     return $tokens;
   }

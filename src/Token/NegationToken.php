@@ -2,11 +2,15 @@
 
 namespace Omnicron\InfixCalculator\Token;
 
-class NegationToken extends BinaryOperationToken
+class NegationToken extends UnaryOperationToken
 {
 
   public function __construct() {
-    parent::__construct(function ($a) { return -$a; });
+    parent::__construct(
+      '-',
+      function ($a) { return -$a; },
+      300
+    );
   }
 
 }
