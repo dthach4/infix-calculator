@@ -3,6 +3,9 @@
 namespace Omnicron\InfixCalculator\TreeNode;
 
 use \Omnicron\InfixCalculator\Token\OperationToken;
+use \Omnicron\InfixCalculator\Token\LiteralToken;
+use \Omnicron\InfixCalculator\Token\BinaryOperationToken;
+use \Omnicron\InfixCalculator\Token\UnaryOperationToken;
 
 class OperationTreeNode extends TreeNode
 {
@@ -15,6 +18,31 @@ class OperationTreeNode extends TreeNode
     $this->operands = $operands;
   }
 
+  public function reduceStep() {
+    $isFinal = true;
+    foreach($this->operands as $operand) {
+      if(!is_a($operand, LiteralTreeNode::class)) {
+        $isFinal = false;
+      }
+    }
+    if($isFinal) {
+      return new LiteralTreeNode(
+        new LiteralToken(
+          $this->evaluate()
+        )
+      );
+    }
+    return new self(
+      $this->operation,
+      array_map(
+        function ($operand) {
+          return $operand->reduceStep();
+        },
+        $this->operands
+      )
+    );
+  }
+
   public function evaluate() {
     $operandsResults = array_map(
       function ($operand) {
@@ -24,4 +52,15 @@ class OperationTreeNode extends TreeNode
     );
     return $this->operation->evaluate(...$operandsResults);
   }
+
+  public function __toString() {
+    if(is_a($this->operation, UnaryOperationToken::class)) {
+      return '('.$this->operation->getOperator().' '.$this->operands[0]->__toString().')';
+    }
+    if(is_a($this->operation, BinaryOperationToken::class)) {
+      return '('.$this->operands[0]->__toString().' '.$this->operation->getOperator().' '.$this->operands[1]->__toString().')';
+    }
+    return $this->operation->getOperator().'('.implode(', ', array_map(function ($operand) { return $operand->__toString(); }, $this->operands)).')';
+  }
+
 }

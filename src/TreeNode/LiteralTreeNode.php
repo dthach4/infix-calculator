@@ -13,7 +13,16 @@ class LiteralTreeNode extends TreeNode
     $this->value = $value;
   }
 
+  public function reduceStep() {
+    return $this;
+  }
+
   public function evaluate() {
     return $this->value->evaluate();
   }
+
+  public function __toString() {
+    return strval($this->value->evaluate());
+  }
+
 }
