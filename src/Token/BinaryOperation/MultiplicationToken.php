@@ -1,6 +1,8 @@
 <?php
 
-namespace Omnicron\InfixCalculator\Token;
+namespace Omnicron\InfixCalculator\Token\BinaryOperation;
+
+use \Omnicron\InfixCalculator\Token\Abstract\BinaryOperationToken;
 
 class MultiplicationToken extends BinaryOperationToken
 {

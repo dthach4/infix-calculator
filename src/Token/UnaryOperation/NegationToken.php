@@ -1,6 +1,8 @@
 <?php
 
-namespace Omnicron\InfixCalculator\Token;
+namespace Omnicron\InfixCalculator\Token\UnaryOperation;
+
+use \Omnicron\InfixCalculator\Token\Abstract\UnaryOperationToken;
 
 class NegationToken extends UnaryOperationToken
 {

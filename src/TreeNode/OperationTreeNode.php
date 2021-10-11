@@ -2,10 +2,11 @@
 
 namespace Omnicron\InfixCalculator\TreeNode;
 
-use \Omnicron\InfixCalculator\Token\OperationToken;
-use \Omnicron\InfixCalculator\Token\LiteralToken;
-use \Omnicron\InfixCalculator\Token\BinaryOperationToken;
-use \Omnicron\InfixCalculator\Token\UnaryOperationToken;
+use \Omnicron\InfixCalculator\Token\Abstract\OperationToken;
+use \Omnicron\InfixCalculator\Token\Abstract\BinaryOperationToken;
+use \Omnicron\InfixCalculator\Token\Abstract\UnaryOperationToken;
+use \Omnicron\InfixCalculator\Token\Literal\LiteralToken;
+use \Omnicron\InfixCalculator\TreeNode\TreeNode;
 
 class OperationTreeNode extends TreeNode
 {

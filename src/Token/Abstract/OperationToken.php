@@ -1,6 +1,8 @@
 <?php
 
-namespace Omnicron\InfixCalculator\Token;
+namespace Omnicron\InfixCalculator\Token\Abstract;
+
+use \Omnicron\InfixCalculator\Token\Abstract\EvaluableToken;
 
 class OperationToken extends EvaluableToken
 {

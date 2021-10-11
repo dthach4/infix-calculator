@@ -1,14 +1,14 @@
 <?php
 
 use \Omnicron\InfixCalculator\Classes\Lexer;
-use \Omnicron\InfixCalculator\Token\AdditionToken;
-use \Omnicron\InfixCalculator\Token\ClosedBracketToken;
-use \Omnicron\InfixCalculator\Token\DivisionToken;
-use \Omnicron\InfixCalculator\Token\MultiplicationToken;
-use \Omnicron\InfixCalculator\Token\OpenBracketToken;
-use \Omnicron\InfixCalculator\Token\SubtractionToken;
-use \Omnicron\InfixCalculator\Token\LiteralToken;
-use \Omnicron\InfixCalculator\Token\PowerToken;
+use \Omnicron\InfixCalculator\Token\BinaryOperation\AdditionToken;
+use \Omnicron\InfixCalculator\Token\BinaryOperation\DivisionToken;
+use \Omnicron\InfixCalculator\Token\BinaryOperation\MultiplicationToken;
+use \Omnicron\InfixCalculator\Token\BinaryOperation\SubtractionToken;
+use \Omnicron\InfixCalculator\Token\BinaryOperation\PowerToken;
+use \Omnicron\InfixCalculator\Token\Bracket\ClosedBracketToken;
+use \Omnicron\InfixCalculator\Token\Bracket\OpenBracketToken;
+use \Omnicron\InfixCalculator\Token\Literal\LiteralToken;
 use \PHPUnit\Framework\TestCase;
 
 class LexerTests extends TestCase

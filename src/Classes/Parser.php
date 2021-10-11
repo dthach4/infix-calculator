@@ -2,12 +2,12 @@
 
 namespace Omnicron\InfixCalculator\Classes;
 
-use \Omnicron\InfixCalculator\Token\BinaryOperationToken;
-use \Omnicron\InfixCalculator\Token\ClosedBracketToken;
-use \Omnicron\InfixCalculator\Token\LiteralToken;
-use \Omnicron\InfixCalculator\Token\OpenBracketToken;
-use \Omnicron\InfixCalculator\Token\OperationToken;
-use \Omnicron\InfixCalculator\Token\UnaryOperationToken;
+use \Omnicron\InfixCalculator\Token\Abstract\BinaryOperationToken;
+use \Omnicron\InfixCalculator\Token\Abstract\OperationToken;
+use \Omnicron\InfixCalculator\Token\Abstract\UnaryOperationToken;
+use \Omnicron\InfixCalculator\Token\Bracket\ClosedBracketToken;
+use \Omnicron\InfixCalculator\Token\Bracket\OpenBracketToken;
+use \Omnicron\InfixCalculator\Token\Literal\LiteralToken;
 use \Omnicron\InfixCalculator\TreeNode\LiteralTreeNode;
 use \Omnicron\InfixCalculator\TreeNode\OperationTreeNode;
 use \Omnicron\InfixCalculator\TreeNode\TreeNode;

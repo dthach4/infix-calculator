@@ -2,7 +2,8 @@
 
 namespace Omnicron\InfixCalculator\TreeNode;
 
-use \Omnicron\InfixCalculator\Token\LiteralToken;
+use \Omnicron\InfixCalculator\Token\Literal\LiteralToken;
+use \Omnicron\InfixCalculator\TreeNode\TreeNode;
 
 class LiteralTreeNode extends TreeNode
 {
