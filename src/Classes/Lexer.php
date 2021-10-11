@@ -77,7 +77,7 @@ class Lexer
             ++$i;
           }
           if(is_null($operationToken)) {
-            throw new InvalidExpressionException('Unexpected character "'.$remainingExpression[0].'" at index '.strlen($expression)-strlen($remainingExpression));
+            throw new InvalidExpressionException('Unexpected character "'.$remainingExpression[0].'" at index '.strlen(trim($expression))-strlen($remainingExpression));
           }
           $tokens[] = $operationToken;
           $remainingExpression = substr($remainingExpression, strlen($operationToken->getOperator()));
@@ -98,7 +98,7 @@ class Lexer
             ++$i;
           }
           if(is_null($operationToken)) {
-            throw new InvalidExpressionException('Unexpected character "'.$remainingExpression[0].'" at index '.strlen($expression)-strlen($remainingExpression));
+            throw new InvalidExpressionException('Unexpected character "'.$remainingExpression[0].'" at index '.strlen(trim($expression))-strlen($remainingExpression));
           }
           $tokens[] = $operationToken;
           $expectOperator = false;
