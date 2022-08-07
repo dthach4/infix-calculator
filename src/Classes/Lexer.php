@@ -4,6 +4,7 @@ namespace Omnicron\InfixCalculator\Classes;
 
 use \Omnicron\InfixCalculator\Exceptions\InvalidExpressionException;
 use \Omnicron\InfixCalculator\Token\Abstract\BinaryOperationToken;
+use \Omnicron\InfixCalculator\Token\Abstract\UnaryFunctionToken;
 use \Omnicron\InfixCalculator\Token\Abstract\UnaryOperationToken;
 use \Omnicron\InfixCalculator\Token\BinaryOperation\AdditionToken;
 use \Omnicron\InfixCalculator\Token\BinaryOperation\DivisionToken;
@@ -13,6 +14,8 @@ use \Omnicron\InfixCalculator\Token\BinaryOperation\SubtractionToken;
 use \Omnicron\InfixCalculator\Token\Bracket\ClosedBracketToken;
 use \Omnicron\InfixCalculator\Token\Bracket\OpenBracketToken;
 use \Omnicron\InfixCalculator\Token\Literal\LiteralToken;
+use \Omnicron\InfixCalculator\Token\UnaryFunction\SineToken;
+use \Omnicron\InfixCalculator\Token\UnaryFunction\CosineToken;
 use \Omnicron\InfixCalculator\Token\UnaryOperation\NegationToken;
 
 class Lexer
@@ -28,22 +31,27 @@ class Lexer
       new NegationToken,
       new PowerToken,
       new SubtractionToken,
+      new SineToken,
+      new CosineToken,
     ];
   }
 
   public function tokenizeExpression($expression) {
-    $unaryOperationTokens = [];
+    $unaryOperationOrFunctionTokens = [];
     $binaryOperationTokens = [];
     foreach($this->operationTokens as $operationToken) {
-      if(is_a($operationToken, UnaryOperationToken::class)) {
-        $unaryOperationTokens[] = $operationToken;
+      if(
+        is_a($operationToken, UnaryOperationToken::class) ||
+        is_a($operationToken, UnaryFunctionToken::class)
+      ) {
+        $unaryOperationOrFunctionTokens[] = $operationToken;
       }
       if(is_a($operationToken, BinaryOperationToken::class)) {
         $binaryOperationTokens[] = $operationToken;
       }
     }
     usort(
-      $unaryOperationTokens,
+      $unaryOperationOrFunctionTokens,
       function ($a, $b) {
         return strlen($b->getOperator()) <=> strlen($a->getOperator());
       }
@@ -56,23 +64,23 @@ class Lexer
     );
     $tokens = [];
     $remainingExpression = trim($expression);
-    $expectOperator = false; // undignified fsa lmao
+    $expectBinaryOperator = false; // undignified fsa lmao
     while(strlen(trim($remainingExpression)) > 0) {
-      if(false === $expectOperator) {
+      if(false === $expectBinaryOperator) {
         if(preg_match('/^([0-9]+(?:\.[0-9]*)?)(.*)$/', $remainingExpression, $regexMatches)) {
           $tokens[] = new LiteralToken(floatval($regexMatches[1]));
           $remainingExpression = $regexMatches[2];
-          $expectOperator = true;
+          $expectBinaryOperator = true;
         } elseif(preg_match('/^(\()(.*)$/', $remainingExpression, $regexMatches)) {
           $tokens[] = new OpenBracketToken;
           $remainingExpression = $regexMatches[2];
-          $expectOperator = false;
+          $expectBinaryOperator = false;
         } else {
           $operationToken = null;
           $i = 0;
-          while($i < count($unaryOperationTokens) && is_null($operationToken)) {
-            if($unaryOperationTokens[$i]->getOperator() === substr($remainingExpression, 0, strlen($unaryOperationTokens[$i]->getOperator()))) {
-              $operationToken = $unaryOperationTokens[$i];
+          while($i < count($unaryOperationOrFunctionTokens) && is_null($operationToken)) {
+            if($unaryOperationOrFunctionTokens[$i]->getOperator() === substr($remainingExpression, 0, strlen($unaryOperationOrFunctionTokens[$i]->getOperator()))) {
+              $operationToken = $unaryOperationOrFunctionTokens[$i];
             }
             ++$i;
           }
@@ -81,13 +89,13 @@ class Lexer
           }
           $tokens[] = $operationToken;
           $remainingExpression = substr($remainingExpression, strlen($operationToken->getOperator()));
-          $expectOperator = false;
+          $expectBinaryOperator = false;
         }
       } else {
         if(preg_match('/^(\))(.*)$/', $remainingExpression, $regexMatches)) {
           $tokens[] = new ClosedBracketToken;
           $remainingExpression = $regexMatches[2];
-          $expectOperator = true;
+          $expectBinaryOperator = true;
         } else {
           $operationToken = null;
           $i = 0;
@@ -101,7 +109,7 @@ class Lexer
             throw new InvalidExpressionException('Unexpected character "'.$remainingExpression[0].'" at index '.strlen(trim($expression))-strlen($remainingExpression));
           }
           $tokens[] = $operationToken;
-          $expectOperator = false;
+          $expectBinaryOperator = false;
           $remainingExpression = substr($remainingExpression, strlen($operationToken->getOperator()));
         }
       }

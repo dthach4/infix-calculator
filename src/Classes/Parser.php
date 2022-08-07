@@ -4,6 +4,7 @@ namespace Omnicron\InfixCalculator\Classes;
 
 use \Omnicron\InfixCalculator\Token\Abstract\BinaryOperationToken;
 use \Omnicron\InfixCalculator\Token\Abstract\OperationToken;
+use \Omnicron\InfixCalculator\Token\Abstract\UnaryFunctionToken;
 use \Omnicron\InfixCalculator\Token\Abstract\UnaryOperationToken;
 use \Omnicron\InfixCalculator\Token\Bracket\ClosedBracketToken;
 use \Omnicron\InfixCalculator\Token\Bracket\OpenBracketToken;
@@ -54,9 +55,15 @@ class Parser
     foreach($priorities as $priority) {
       for($j = 0; $j < count($buffer); ++$j) {
         if(is_a($buffer[$j], OperationToken::class) && $buffer[$j]->getPriority() === $priority) {
-          if(is_a($buffer[$j], UnaryOperationToken::class)) {
+          if(
+            is_a($buffer[$j], UnaryOperationToken::class) ||
+            is_a($buffer[$j], UnaryFunctionToken::class)
+          ) {
             $k = $j;
-            while(is_a($buffer[$k+1], UnaryOperationToken::class)) {
+            while(
+              is_a($buffer[$k+1], UnaryOperationToken::class) ||
+              is_a($buffer[$k+1], UnaryFunctionToken::class)
+            ) {
               ++$k;
             }
             while($k >= $j) {

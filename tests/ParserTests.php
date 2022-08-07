@@ -76,6 +76,76 @@ class ParserTests extends TestCase
     $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
     $this->assertEquals(16, $parsingTree->evaluate());
   }
+  public function testParserSineOne() {
+    $lexer = new Lexer;
+    $parser = new Parser;
+    $tokenizedExpression = $lexer->tokenizeExpression('sin(0)');
+    $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
+    $this->assertEqualsWithDelta(0, $parsingTree->evaluate(), 0.0001);
+  }
+  public function testParserSineTwo() {
+    $lexer = new Lexer;
+    $parser = new Parser;
+    $tokenizedExpression = $lexer->tokenizeExpression('sin(3.1415926535 / 2)');
+    $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
+    $this->assertEqualsWithDelta(1, $parsingTree->evaluate(), 0.0001);
+  }
+  public function testParserSineThree() {
+    $lexer = new Lexer;
+    $parser = new Parser;
+    $tokenizedExpression = $lexer->tokenizeExpression('sin(3.1415926535)');
+    $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
+    $this->assertEqualsWithDelta(0, $parsingTree->evaluate(), 0.0001);
+  }
+  public function testParserSineFour() {
+    $lexer = new Lexer;
+    $parser = new Parser;
+    $tokenizedExpression = $lexer->tokenizeExpression('sin(3.1415926535 * 3 / 2)');
+    $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
+    $this->assertEqualsWithDelta(-1, $parsingTree->evaluate(), 0.0001);
+  }
+  public function testParserSineFive() {
+    $lexer = new Lexer;
+    $parser = new Parser;
+    $tokenizedExpression = $lexer->tokenizeExpression('sin(3.1415926535 * 2)');
+    $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
+    $this->assertEqualsWithDelta(0, $parsingTree->evaluate(), 0.0001);
+  }
+  public function testParserCosineOne() {
+    $lexer = new Lexer;
+    $parser = new Parser;
+    $tokenizedExpression = $lexer->tokenizeExpression('cos(0)');
+    $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
+    $this->assertEqualsWithDelta(1, $parsingTree->evaluate(), 0.0001);
+  }
+  public function testParserCosineTwo() {
+    $lexer = new Lexer;
+    $parser = new Parser;
+    $tokenizedExpression = $lexer->tokenizeExpression('cos(3.1415926535 / 2)');
+    $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
+    $this->assertEqualsWithDelta(0, $parsingTree->evaluate(), 0.0001);
+  }
+  public function testParserCosineThree() {
+    $lexer = new Lexer;
+    $parser = new Parser;
+    $tokenizedExpression = $lexer->tokenizeExpression('cos(3.1415926535)');
+    $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
+    $this->assertEqualsWithDelta(-1, $parsingTree->evaluate(), 0.0001);
+  }
+  public function testParserCosineFour() {
+    $lexer = new Lexer;
+    $parser = new Parser;
+    $tokenizedExpression = $lexer->tokenizeExpression('cos(3.1415926535 * 3 / 2)');
+    $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
+    $this->assertEqualsWithDelta(0, $parsingTree->evaluate(), 0.0001);
+  }
+  public function testParserCosineFive() {
+    $lexer = new Lexer;
+    $parser = new Parser;
+    $tokenizedExpression = $lexer->tokenizeExpression('cos(3.1415926535 * 2)');
+    $parsingTree = $parser->parseTokenizedExpression($tokenizedExpression);
+    $this->assertEqualsWithDelta(1, $parsingTree->evaluate(), 0.0001);
+  }
   public function testParserBracketsOne() {
     $lexer = new Lexer;
     $parser = new Parser;
